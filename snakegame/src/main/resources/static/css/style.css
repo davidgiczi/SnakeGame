@@ -12,6 +12,7 @@ table{
 	margin-right: auto;
 	width: 60%;
 	border-collapse: collapse;
+	border: 2px solid lightgray;
 }
 
 td, tr{

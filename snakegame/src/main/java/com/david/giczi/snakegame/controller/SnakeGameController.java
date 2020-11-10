@@ -47,7 +47,7 @@ public class SnakeGameController {
 		@SuppressWarnings("unchecked")
 		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
 		
-		if(service.canGoDirect(snake)) {
+		if(service.canGoDirect(snake) && !service.isSnakeBittenByItself(snake)) {
 			snake = service.goDirect(snake);
 			request.getSession().setAttribute("snake", snake);
 		}
@@ -69,8 +69,8 @@ public class SnakeGameController {
 		model.addAttribute("boardrows", Config.BOARD_ROWS);
 		@SuppressWarnings("unchecked")
 		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
-
-		if(service.canTurnLeft(snake)) {
+		
+		if(service.canTurnLeft(snake) && !service.isSnakeBittenByItself(snake)) {
 			snake = service.turnLeft(snake);
 			request.getSession().setAttribute("snake", snake);
 		}
@@ -93,7 +93,8 @@ public class SnakeGameController {
 		model.addAttribute("boardrows", Config.BOARD_ROWS);
 		@SuppressWarnings("unchecked")
 		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
-		if(service.canTurnRight(snake)) {
+		
+		if(service.canTurnRight(snake) && !service.isSnakeBittenByItself(snake)) {
 			snake = service.turnRight(snake);
 			request.getSession().setAttribute("snake", snake);
 		}
