@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Snake Game</title>
+<link th:href="@{/css/style.css}"  rel="stylesheet">
+</head>
+<body>
+
+<br><br>
+
+<div>
+<font class="title">Szint:</font>&nbsp;
+<font class="content"   th:text="${infotext}"></font>
+&nbsp;&nbsp;&nbsp;
+<font class="title">Pontszám:</font>&nbsp;
+<font class="content" th:text="${infotext}"></font>
+</div>
+
+<table>
+
+<tr th:each="x: ${#numbers.sequence(0, boardrows - 1)}">
+<td th:each="y: ${#numbers.sequence(0, boardcols - 1)}" th:id="${x * boardcols + y}"
+	th:style="|background-color: ${board[x * boardcols + y].color}|">
+</tr>
+
+</table>
+
+<form th:action="@{/Snake}" th:id="start"></form>
+<form th:action="@{/Snake/goDirect}" th:id="direct"></form>
+<form th:action="@{/Snake/turnLeft}" th:id="left"></form>
+<form th:action="@{/Snake/turnRight}" th:id="right"></form>
+</body>
+
+<input type="hidden" th:value="${theEnd}" th:id="end">
+<input type="hidden" th:value="${tempo}" th:id="tempo">
+
+<script type="text/javascript" th:src="@{/script/script.js}"></script>
+
+</html>

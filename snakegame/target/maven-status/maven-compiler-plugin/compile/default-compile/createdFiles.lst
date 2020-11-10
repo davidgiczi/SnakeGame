@@ -1,0 +1,9 @@
+com\david\giczi\snakegame\service\SnakeGameService.class
+com\david\giczi\snakegame\service\SnakeGameServiceImpl.class
+com\david\giczi\snakegame\SnakeGameApplication.class
+com\david\giczi\snakegame\model\GameBoardParam.class
+META-INF\spring-configuration-metadata.json
+com\david\giczi\snakegame\utils\Direction.class
+com\david\giczi\snakegame\model\SnakeComponentColor.class
+com\david\giczi\snakegame\model\Component.class
+com\david\giczi\snakegame\controller\SnakeGameController.class

@@ -1,0 +1,32 @@
+{
+  "groups": [
+    {
+      "name": "param",
+      "type": "com.david.giczi.snakegame.config.GameParam",
+      "sourceType": "com.david.giczi.snakegame.config.GameParam"
+    }
+  ],
+  "properties": [
+    {
+      "name": "param.barrier-number",
+      "type": "java.lang.Integer",
+      "sourceType": "com.david.giczi.snakegame.config.GameParam"
+    },
+    {
+      "name": "param.board-cols",
+      "type": "java.lang.Integer",
+      "sourceType": "com.david.giczi.snakegame.config.GameParam"
+    },
+    {
+      "name": "param.board-rows",
+      "type": "java.lang.Integer",
+      "sourceType": "com.david.giczi.snakegame.config.GameParam"
+    },
+    {
+      "name": "param.snake-length",
+      "type": "java.lang.Integer",
+      "sourceType": "com.david.giczi.snakegame.config.GameParam"
+    }
+  ],
+  "hints": []
+}
