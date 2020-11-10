@@ -274,6 +274,14 @@ public class SnakeGameServiceImpl implements SnakeGameService, SnakeComponentCol
 	@Override
 	public boolean isSnakeBittenByItself(List<Component> snake) {
 		
+		List<Component> alterSnake = new ArrayList<>(snake);
+		
+		Component snakeHead = alterSnake.get(snake.size() - 1);
+		alterSnake.remove(snake.size() - 1);
+		if(alterSnake.contains(snakeHead)) {
+			return true;
+		}
+			
 		return false;
 	}
 

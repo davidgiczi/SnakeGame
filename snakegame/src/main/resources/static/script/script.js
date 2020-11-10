@@ -29,7 +29,7 @@ function pressButton(e) {
 
     }  else if (e.keyCode === 13) {
 	
-      alert("Szünet");
+      alert("Pihi");
     } 
 }
 

@@ -10,22 +10,26 @@
     {
       "name": "param.barrier-number",
       "type": "java.lang.Integer",
-      "sourceType": "com.david.giczi.snakegame.config.GameParam"
+      "sourceType": "com.david.giczi.snakegame.config.GameParam",
+      "defaultValue": 0
     },
     {
       "name": "param.board-cols",
       "type": "java.lang.Integer",
-      "sourceType": "com.david.giczi.snakegame.config.GameParam"
+      "sourceType": "com.david.giczi.snakegame.config.GameParam",
+      "defaultValue": 0
     },
     {
       "name": "param.board-rows",
       "type": "java.lang.Integer",
-      "sourceType": "com.david.giczi.snakegame.config.GameParam"
+      "sourceType": "com.david.giczi.snakegame.config.GameParam",
+      "defaultValue": 0
     },
     {
       "name": "param.snake-length",
       "type": "java.lang.Integer",
-      "sourceType": "com.david.giczi.snakegame.config.GameParam"
+      "sourceType": "com.david.giczi.snakegame.config.GameParam",
+      "defaultValue": 0
     }
   ],
   "hints": []
