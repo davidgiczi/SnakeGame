@@ -28,12 +28,19 @@ public class SnakeGameController {
 		
 		request.getSession().invalidate();
 		service.setGameBoardParam();	
+		
+		List<Component> snake = service.createSnakeComponentStore(Config.SNAKE_LENGTH);
+		request.getSession().setAttribute("snake", snake);
+		List<Component> edibleStore = service.createEdibleComponentStore(snake);
+		request.getSession().setAttribute("edible", edibleStore);
+		List<Component> barrierStore = service.createBarrierComponentStore(snake, edibleStore);
+		request.getSession().setAttribute("barrier", barrierStore);
+		
 		model.addAttribute("boardcols", Config.BOARD_COLS);
 		model.addAttribute("boardrows", Config.BOARD_ROWS);
-		List<Component> snake = service.createSnake(Config.SNAKE_LENGTH);
-		request.getSession().setAttribute("snake", snake);
-		model.addAttribute("infotext", "Snake Game");
-		model.addAttribute("board", service.addSnakeToBoardComponent(snake));
+		model.addAttribute("board", createBoard(request));
+		model.addAttribute("level", service.calcLevel(snake));
+		model.addAttribute("score", service.calcScore(snake));
 		model.addAttribute("tempo", service.getTempo(snake));
 		
 		return "gameboard";
@@ -41,9 +48,7 @@ public class SnakeGameController {
 	
 	@RequestMapping("/Snake/goDirect")
 	public String stepDirect(Model model, HttpServletRequest request) {
-			
-		model.addAttribute("boardcols", Config.BOARD_COLS);
-		model.addAttribute("boardrows", Config.BOARD_ROWS);
+				
 		@SuppressWarnings("unchecked")
 		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
 		
@@ -55,8 +60,11 @@ public class SnakeGameController {
 			model.addAttribute("theEnd", "Vége a játéknak, szeretnél újat játszani?");
 		}	
 		
-		model.addAttribute("infotext", "Snake Game");
-		model.addAttribute("board", service.addSnakeToBoardComponent(snake));
+		model.addAttribute("boardcols", Config.BOARD_COLS);
+		model.addAttribute("boardrows", Config.BOARD_ROWS);
+		model.addAttribute("board", createBoard(request));
+		model.addAttribute("level", service.calcLevel(snake));
+		model.addAttribute("score", service.calcScore(snake));
 		model.addAttribute("tempo", service.getTempo(snake));
 		
 		return "gameboard";
@@ -65,8 +73,6 @@ public class SnakeGameController {
 	@RequestMapping("/Snake/turnLeft")
 	public String stepLeft(Model model, HttpServletRequest request) {
 			
-		model.addAttribute("boardcols", Config.BOARD_COLS);
-		model.addAttribute("boardrows", Config.BOARD_ROWS);
 		@SuppressWarnings("unchecked")
 		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
 		
@@ -78,8 +84,11 @@ public class SnakeGameController {
 			model.addAttribute("theEnd", "Vége a játéknak, szeretnél újat játszani?");
 		}	
 		
-		model.addAttribute("infotext", "Snake Game");
-		model.addAttribute("board", service.addSnakeToBoardComponent(snake));
+		model.addAttribute("boardcols", Config.BOARD_COLS);
+		model.addAttribute("boardrows", Config.BOARD_ROWS);
+		model.addAttribute("board", createBoard(request));
+		model.addAttribute("level", service.calcLevel(snake));
+		model.addAttribute("score", service.calcScore(snake));
 		model.addAttribute("tempo", service.getTempo(snake));
 		
 		return "gameboard";
@@ -89,8 +98,6 @@ public class SnakeGameController {
 	@RequestMapping("/Snake/turnRight")
 	public String stepRight(Model model, HttpServletRequest request) {
 			
-		model.addAttribute("boardcols", Config.BOARD_COLS);
-		model.addAttribute("boardrows", Config.BOARD_ROWS);
 		@SuppressWarnings("unchecked")
 		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
 		
@@ -102,12 +109,30 @@ public class SnakeGameController {
 			model.addAttribute("theEnd", "Vége a játéknak, szeretnél újat játszani?");
 		}
 		
-		model.addAttribute("infotext", "Snake Game");
-		model.addAttribute("board", service.addSnakeToBoardComponent(snake));
+		model.addAttribute("boardcols", Config.BOARD_COLS);
+		model.addAttribute("boardrows", Config.BOARD_ROWS);
+		model.addAttribute("board", createBoard(request));
+		model.addAttribute("level", service.calcLevel(snake));
+		model.addAttribute("score", service.calcScore(snake));
 		model.addAttribute("tempo", service.getTempo(snake));
-		
-		
+			
 		return "gameboard";
 	}
 	
+	private List<Component> createBoard(HttpServletRequest request){
+		
+		@SuppressWarnings("unchecked")
+		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
+		@SuppressWarnings("unchecked")
+		List<Component> edibleStore = (List<Component>) request.getSession().getAttribute("edible");
+		@SuppressWarnings("unchecked")
+		List<Component> barrierStore = (List<Component>) request.getSession().getAttribute("barrier");
+		
+		List<Component> board = service.createBoardComponentStore();
+		List<Component> boardWithSnake = service.addComponentStoreToBoardComponentStore(board, snake);
+		List<Component> boardWithSnakeAndEdible = service.addComponentStoreToBoardComponentStore(boardWithSnake, edibleStore);
+		List<Component> boardWithSnakeAndEdibleAndBarrier = service.addComponentStoreToBoardComponentStore(boardWithSnakeAndEdible, barrierStore);
+		
+		return boardWithSnakeAndEdibleAndBarrier;
+	}
 }
