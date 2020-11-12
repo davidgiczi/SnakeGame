@@ -26,6 +26,12 @@
       "defaultValue": 0
     },
     {
+      "name": "param.edible-number",
+      "type": "java.lang.Integer",
+      "sourceType": "com.david.giczi.snakegame.config.GameParam",
+      "defaultValue": 0
+    },
+    {
       "name": "param.snake-length",
       "type": "java.lang.Integer",
       "sourceType": "com.david.giczi.snakegame.config.GameParam",

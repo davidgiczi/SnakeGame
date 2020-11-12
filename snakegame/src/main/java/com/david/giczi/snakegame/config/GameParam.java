@@ -10,6 +10,7 @@ public class GameParam {
 	private int board_rows;
 	private int board_cols;
 	private int snake_length;
+	private int edible_number;
 	private int barrier_number;
 	
 	
@@ -38,6 +39,14 @@ public class GameParam {
 	}
 	public void setBarrier_number(int barrier_number) {
 		this.barrier_number = barrier_number;
+	}
+
+	public int getEdible_number() {
+		return edible_number;
+	}
+
+	public void setEdible_number(int edible_number) {
+		this.edible_number = edible_number;
 	}
 	
 		
