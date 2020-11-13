@@ -2,6 +2,8 @@ package com.david.giczi.snakegame.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.david.giczi.snakegame.domain.Component;
 
 public interface SnakeGameService {
@@ -19,8 +21,10 @@ public interface SnakeGameService {
 	boolean canTurnLeft(List<Component> snake);
 	boolean canTurnRight(List<Component> snake);
 	boolean isSnakeBittenByItself(List<Component> snake);
+	boolean isComponentMeeting(List<Component> snake, List<Component> componentStore);
 	int calcScore(List<Component> snake);
 	int getTempo(List<Component> snake);
 	String calcLevel(List<Component> snake);
+	void eating(HttpServletRequest request);
 	
 }

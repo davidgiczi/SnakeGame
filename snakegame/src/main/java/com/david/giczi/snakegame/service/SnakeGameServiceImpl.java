@@ -3,6 +3,8 @@ package com.david.giczi.snakegame.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.david.giczi.snakegame.config.Config;
@@ -51,25 +53,26 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 		List<Component> snake = new ArrayList<>();
 
 		if (0 > length || length > Config.BOARD_ROWS * Config.BOARD_COLS) {
-			length = 0;
+			return snake;
 		}
-
+				
 		for (int i = length - 2; i >= 0; i--) {
 			Component snakeBody = new Component(i);
 			snakeBody.setColor(ComponentColor.YELLOW);
 			snake.add(snakeBody);
 		}
-
+		
 		Component snakeHead = new Component(length - 1);
 		snakeHead.setActualDirection(Direction.EAST);
 		snakeHead.setColor(ComponentColor.RED);
 		snake.add(snakeHead);
-
+		
 		return snake;
 	}
 
 	@Override
-	public List<Component> addComponentStoreToBoardComponentStore(List<Component> board, List<Component> componentStore) {
+	public List<Component> addComponentStoreToBoardComponentStore(List<Component> board,
+			List<Component> componentStore) {
 
 		for (Component boardComponent : board) {
 			for (Component storeComponent : componentStore) {
@@ -87,13 +90,14 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 
 	@Override
 	public List<Component> goDirect(List<Component> snake) {
-
+		
 		List<Component> steppedSnake = new ArrayList<>();
 		steppedSnake.add(new Component(snake.get(snake.size() - 1).getLogicBoardIndex()));
 		snake.stream().filter(c -> snake.indexOf(c) < snake.size() - 2)
 				.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
 		steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
-		steppedSnake.add(stepDirect(snake.get(snake.size() - 1)));
+		steppedSnake.add(stepDirect((snake.get(snake.size() - 1))));
+						
 		return steppedSnake;
 	}
 
@@ -290,9 +294,7 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 
 			Component component = new Component(x, y);
 
-			if (x != snakeHead.getViewBoard_x() && 
-				y != snakeHead.getViewBoard_y() &&
-				!store.contains(component)) {
+			if (x != snakeHead.getViewBoard_x() && y != snakeHead.getViewBoard_y() && !store.contains(component)) {
 
 				component.setColor(ComponentColor.GREEN);
 
@@ -317,10 +319,8 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 
 			Component component = new Component(x, y);
 
-			if (x != snakeHead.getViewBoard_x() && 
-				y != snakeHead.getViewBoard_y() && 
-				!store.contains(component) &&
-				!edibleComponentStore.contains(component)) {
+			if (x != snakeHead.getViewBoard_x() && y != snakeHead.getViewBoard_y() && !store.contains(component)
+					&& !edibleComponentStore.contains(component)) {
 
 				component.setColor(ComponentColor.BROWN);
 
@@ -371,7 +371,7 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 		int netSnakeLength = snake.size() - Config.SNAKE_LENGTH;
 
 		if (Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 2 * Config.EDIBLE_NUMBER) {
-			return "II. szint";
+			return "II.";
 		} else if (2 * Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 3 * Config.EDIBLE_NUMBER) {
 			return "III.";
 		} else if (3 * Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 4 * Config.EDIBLE_NUMBER) {
@@ -395,9 +395,9 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 
 	@Override
 	public int getTempo(List<Component> snake) {
-		
+
 		int netSnakeLength = snake.size() - Config.SNAKE_LENGTH;
-		
+
 		if (Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 2 * Config.EDIBLE_NUMBER) {
 			return 900;
 		} else if (2 * Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 3 * Config.EDIBLE_NUMBER) {
@@ -417,9 +417,38 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 		} else if (9 * Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 10 * Config.EDIBLE_NUMBER) {
 			return 100;
 		} else
+
+			return 1000;
+	}
+
+	@Override
+	public boolean isComponentMeeting(List<Component> snake, List<Component> componentStore) {
+
+		Component snakeHead = snake.get(snake.size() - 1);
+
+		if (componentStore.contains(snakeHead)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public void eating(HttpServletRequest request) {
+
+		@SuppressWarnings("unchecked")
+		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
+		@SuppressWarnings("unchecked")
+		List<Component> edibleStore = (List<Component>) request.getSession().getAttribute("edible");
+		@SuppressWarnings("unchecked")
+		List<Component> barrierStore = (List<Component>) request.getSession().getAttribute("barrier");
 		
-		
-		return 1000;
+		Component snakeHead = snake.get(snake.size() - 1);
+		edibleStore.remove(snakeHead);
+
+		request.getSession().setAttribute("snake", snake);
+		request.getSession().setAttribute("edible", edibleStore);
+
 	}
 
 }
