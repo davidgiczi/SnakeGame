@@ -56,7 +56,7 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 			return snake;
 		}
 				
-		for (int i = length - 2; i >= 0; i--) {
+		for (int i = 0; i < length - 1; i++) {
 			Component snakeBody = new Component(i);
 			snakeBody.setColor(ComponentColor.YELLOW);
 			snake.add(snakeBody);
@@ -92,8 +92,7 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 	public List<Component> goDirect(List<Component> snake) {
 		
 		List<Component> steppedSnake = new ArrayList<>();
-		steppedSnake.add(new Component(snake.get(snake.size() - 1).getLogicBoardIndex()));
-		snake.stream().filter(c -> snake.indexOf(c) < snake.size() - 2)
+		snake.stream().filter(c -> snake.indexOf(c) > 0)
 				.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
 		steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
 		steppedSnake.add(stepDirect((snake.get(snake.size() - 1))));
@@ -105,8 +104,7 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 	public List<Component> turnLeft(List<Component> snake) {
 
 		List<Component> steppedSnake = new ArrayList<>();
-		steppedSnake.add(new Component(snake.get(snake.size() - 1).getLogicBoardIndex()));
-		snake.stream().filter(c -> snake.indexOf(c) < snake.size() - 2)
+		snake.stream().filter(c -> snake.indexOf(c) > 0)
 				.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
 		steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
 		steppedSnake.add(stepLeft(snake.get(snake.size() - 1)));
@@ -115,9 +113,9 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 
 	@Override
 	public List<Component> turnRight(List<Component> snake) {
+		
 		List<Component> steppedSnake = new ArrayList<>();
-		steppedSnake.add(new Component(snake.get(snake.size() - 1).getLogicBoardIndex()));
-		snake.stream().filter(c -> snake.indexOf(c) < snake.size() - 2)
+		snake.stream().filter(c -> snake.indexOf(c) > 0)
 				.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
 		steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
 		steppedSnake.add(stepRight(snake.get(snake.size() - 1)));
@@ -445,7 +443,32 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 		
 		Component snakeHead = snake.get(snake.size() - 1);
 		edibleStore.remove(snakeHead);
-
+		Component snakeTail = snake.get(0);
+		int x = snakeTail.getViewBoard_x();
+		int y = snakeTail.getViewBoard_y();
+		List<Component> store = new ArrayList<>();
+		store.add(new Component(x + 1, y));
+		store.add(new Component(x - 1, y));
+		store.add(new Component(x, y + 1));
+		store.add(new Component(x, y - 1));
+		store.forEach(t -> t.setColor(ComponentColor.YELLOW));
+		Component plusSnakeTail = store
+								.stream()
+								.filter(t ->
+								t.getViewBoard_x() >= 0 &&
+								t.getViewBoard_y() >= 0 &&
+								t.getViewBoard_x() < Config.BOARD_ROWS &&
+								t.getViewBoard_y() < Config.BOARD_COLS &&
+								!snake.contains(t) &&
+								!edibleStore.contains(t) &&
+								!barrierStore.contains(t))
+								.findFirst()
+								.get();
+		store = new ArrayList<>(snake);
+		snake.clear();
+		snake.add(plusSnakeTail);
+		snake.addAll(store);
+		
 		request.getSession().setAttribute("snake", snake);
 		request.getSession().setAttribute("edible", edibleStore);
 
