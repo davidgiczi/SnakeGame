@@ -310,13 +310,16 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 
 		int numberOfBarriersNextToEdible = 0;
 
-		if (barrierStore.contains(new Component(component.getViewBoard_x() + 1, component.getViewBoard_y()))) {
+		if(barrierStore.contains(new Component(component.getViewBoard_x() + 1, component.getViewBoard_y()))) {
 			numberOfBarriersNextToEdible++;
-		} else if (barrierStore.contains(new Component(component.getViewBoard_x() - 1, component.getViewBoard_y()))) {
+		}
+		if(barrierStore.contains(new Component(component.getViewBoard_x() - 1, component.getViewBoard_y()))) {
 			numberOfBarriersNextToEdible++;
-		} else if (barrierStore.contains(new Component(component.getViewBoard_x(), component.getViewBoard_y() + 1))) {
+		}
+		if(barrierStore.contains(new Component(component.getViewBoard_x(), component.getViewBoard_y() + 1))) {
 			numberOfBarriersNextToEdible++;
-		} else if (barrierStore.contains(new Component(component.getViewBoard_x(), component.getViewBoard_y() - 1))) {
+		}
+		if(barrierStore.contains(new Component(component.getViewBoard_x(), component.getViewBoard_y() - 1))) {
 			numberOfBarriersNextToEdible++;
 		}
 
