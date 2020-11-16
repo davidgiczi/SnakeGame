@@ -11,8 +11,8 @@ public interface SnakeGameService {
 	void setGameBoardParam();
 	List<Component> createSnakeComponentStore(int length);
 	List<Component> createBoardComponentStore();
-	List<Component> createEdibleComponentStore(List<Component> snake);
-	List<Component> createBarrierComponentStore(List<Component> snake, List<Component> edibleComponentStore);
+	List<Component> createEdibleComponentStore(List<Component> snake, List<Component> barrierStore);
+	List<Component> createBarrierComponentStore(List<Component> snake);
 	List<Component> addComponentStoreToBoardComponentStore(List<Component> board, List<Component> componentStore);
 	List<Component> goDirect(List<Component> snake);
 	List<Component> turnLeft(List<Component> snake);

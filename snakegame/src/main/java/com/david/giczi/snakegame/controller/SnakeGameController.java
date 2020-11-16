@@ -28,11 +28,11 @@ public class SnakeGameController {
 
 		List<Component> snake = service.createSnakeComponentStore(Config.SNAKE_LENGTH);
 		request.getSession().setAttribute("snake", snake);
-		List<Component> edibleStore = service.createEdibleComponentStore(snake);
-		request.getSession().setAttribute("edible", edibleStore);
-		List<Component> barrierStore = service.createBarrierComponentStore(snake, edibleStore);
+		List<Component> barrierStore = service.createBarrierComponentStore(snake);
 		request.getSession().setAttribute("barrier", barrierStore);
-
+		List<Component> edibleStore = service.createEdibleComponentStore(snake, barrierStore);
+		request.getSession().setAttribute("edible", edibleStore);
+		
 		model.addAttribute("boardcols", Config.BOARD_COLS);
 		model.addAttribute("boardrows", Config.BOARD_ROWS);
 		model.addAttribute("board", createBoard(request));
@@ -176,8 +176,7 @@ public class SnakeGameController {
 
 		List<Component> board = service.createBoardComponentStore();
 		List<Component> boardWithEdible = service.addComponentStoreToBoardComponentStore(board, edibleStore);
-		List<Component> boardWithdEdibleAndBarrier = service.addComponentStoreToBoardComponentStore(boardWithEdible,
-				barrierStore);
+		List<Component> boardWithdEdibleAndBarrier = service.addComponentStoreToBoardComponentStore(boardWithEdible, barrierStore);
 		List<Component> boardWithEdibleAndBarrierAndSnake = service
 				.addComponentStoreToBoardComponentStore(boardWithdEdibleAndBarrier, snake);
 
@@ -186,8 +185,8 @@ public class SnakeGameController {
 
 	private void createNewEdibleAndBarrierComponentStore(List<Component> snake, HttpServletRequest request) {
 		
-		List<Component> newEdibleStore = service.createEdibleComponentStore(snake);
-		List<Component> newBarrierStore = service.createBarrierComponentStore(snake, newEdibleStore);
+		List<Component> newBarrierStore = service.createBarrierComponentStore(snake);
+		List<Component> newEdibleStore = service.createEdibleComponentStore(snake, newBarrierStore);
 		request.getSession().setAttribute("edible", newEdibleStore);
 		request.getSession().setAttribute("barrier", newBarrierStore);
 
