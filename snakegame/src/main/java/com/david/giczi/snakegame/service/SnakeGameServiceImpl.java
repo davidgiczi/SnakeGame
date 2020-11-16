@@ -367,8 +367,11 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 	public String calcLevel(List<Component> snake) {
 
 		int netSnakeLength = snake.size() - Config.SNAKE_LENGTH;
-
-		if (Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 2 * Config.EDIBLE_NUMBER) {
+		
+		if(0 <= netSnakeLength && netSnakeLength < Config.EDIBLE_NUMBER) {
+			return "I.";
+		}
+		else if (Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 2 * Config.EDIBLE_NUMBER) {
 			return "II.";
 		} else if (2 * Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 3 * Config.EDIBLE_NUMBER) {
 			return "III.";
@@ -384,19 +387,20 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 			return "VIII.";
 		} else if (8 * Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 9 * Config.EDIBLE_NUMBER) {
 			return "IX.";
-		} else if (9 * Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 10 * Config.EDIBLE_NUMBER) {
-			return "X.";
-		} else
+		} else 
 
-			return "I.";
+			return "X.";
 	}
 
 	@Override
 	public int getTempo(List<Component> snake) {
 
 		int netSnakeLength = snake.size() - Config.SNAKE_LENGTH;
-
-		if (Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 2 * Config.EDIBLE_NUMBER) {
+		
+		if(0 <= netSnakeLength && netSnakeLength < Config.EDIBLE_NUMBER) {
+			return 1000;
+		}
+		else if (Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 2 * Config.EDIBLE_NUMBER) {
 			return 900;
 		} else if (2 * Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 3 * Config.EDIBLE_NUMBER) {
 			return 800;
@@ -412,11 +416,9 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 			return 300;
 		} else if (8 * Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 9 * Config.EDIBLE_NUMBER) {
 			return 200;
-		} else if (9 * Config.EDIBLE_NUMBER <= netSnakeLength && netSnakeLength < 10 * Config.EDIBLE_NUMBER) {
+		} else 
+			
 			return 100;
-		} else
-
-			return 1000;
 	}
 
 	@Override

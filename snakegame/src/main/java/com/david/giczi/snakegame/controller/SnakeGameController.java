@@ -44,7 +44,7 @@ public class SnakeGameController {
 	}
 
 	@RequestMapping("/Snake/goDirect")
-	public String playGame(Model model, HttpServletRequest request) {
+	public String goDirect(Model model, HttpServletRequest request) {
 
 		@SuppressWarnings("unchecked")
 		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
@@ -54,41 +54,33 @@ public class SnakeGameController {
 		List<Component> barrierStore = (List<Component>) request.getSession().getAttribute("barrier");
 
 		if (service.isComponentMeeting(snake, edibleStore)) {
-	
+
 			service.eating(request);
-						
-		} 
-		else if(edibleStore.isEmpty()) {
-			
-			List<Component> newEdibleStore = service.createEdibleComponentStore(snake);
-			List<Component> newBarrierStore = service.createBarrierComponentStore(snake, newEdibleStore);
-			request.getSession().setAttribute("edible", newEdibleStore);
-			request.getSession().setAttribute("barrier", newBarrierStore);
-			
-		}
-		else {
-			
-			
+
+		} else if (edibleStore.isEmpty()) {
+
+			createNewEdibleAndBarrierComponentStore(snake, request);
+
+		} else {
+
 			if (service.canGoDirect(snake) && !service.isSnakeBittenByItself(snake)
 					&& !service.isComponentMeeting(snake, barrierStore)) {
 
 				snake = service.goDirect(snake);
 				request.getSession().setAttribute("snake", snake);
-			} 
-			else {
-							
+			} else {
+
 				model.addAttribute("theEnd", "BIG-BANG! Szeretnél új játékot játszani?");
 			}
-			
-	}
-		
-			model.addAttribute("boardcols", Config.BOARD_COLS);
-			model.addAttribute("boardrows", Config.BOARD_ROWS);
-			model.addAttribute("board", createBoard(request));
-			model.addAttribute("level", service.calcLevel(snake));
-			model.addAttribute("score", service.calcScore(snake));
-			model.addAttribute("tempo", service.getTempo(snake));
-		
+
+		}
+
+		model.addAttribute("boardcols", Config.BOARD_COLS);
+		model.addAttribute("boardrows", Config.BOARD_ROWS);
+		model.addAttribute("board", createBoard(request));
+		model.addAttribute("level", service.calcLevel(snake));
+		model.addAttribute("score", service.calcScore(snake));
+		model.addAttribute("tempo", service.getTempo(snake));
 
 		return "gameboard";
 	}
@@ -99,17 +91,29 @@ public class SnakeGameController {
 		@SuppressWarnings("unchecked")
 		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
 		@SuppressWarnings("unchecked")
+		List<Component> edibleStore = (List<Component>) request.getSession().getAttribute("edible");
+		@SuppressWarnings("unchecked")
 		List<Component> barrierStore = (List<Component>) request.getSession().getAttribute("barrier");
 
-		if (service.canTurnLeft(snake) && !service.isSnakeBittenByItself(snake)
-				&& !service.isComponentMeeting(snake, barrierStore)) {
+		if (service.isComponentMeeting(snake, edibleStore)) {
 
-			snake = service.turnLeft(snake);
-			request.getSession().setAttribute("snake", snake);
+			service.eating(request);
+
+		} else if (edibleStore.isEmpty()) {
+
+			createNewEdibleAndBarrierComponentStore(snake, request);
+
 		} else {
-			model.addAttribute("theEnd", "BIG-BANG! Szeretnél új játékot játszani?");
-		}
 
+			if (service.canTurnLeft(snake) && !service.isSnakeBittenByItself(snake)
+					&& !service.isComponentMeeting(snake, barrierStore)) {
+
+				snake = service.turnLeft(snake);
+				request.getSession().setAttribute("snake", snake);
+			} else {
+				model.addAttribute("theEnd", "BIG-BANG! Szeretnél új játékot játszani?");
+			}
+		}
 		model.addAttribute("boardcols", Config.BOARD_COLS);
 		model.addAttribute("boardrows", Config.BOARD_ROWS);
 		model.addAttribute("board", createBoard(request));
@@ -126,15 +130,29 @@ public class SnakeGameController {
 		@SuppressWarnings("unchecked")
 		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
 		@SuppressWarnings("unchecked")
+		List<Component> edibleStore = (List<Component>) request.getSession().getAttribute("edible");
+		@SuppressWarnings("unchecked")
 		List<Component> barrierStore = (List<Component>) request.getSession().getAttribute("barrier");
 
-		if (service.canTurnRight(snake) && !service.isSnakeBittenByItself(snake)
-				&& !service.isComponentMeeting(snake, barrierStore)) {
+		if (service.isComponentMeeting(snake, edibleStore)) {
 
-			snake = service.turnRight(snake);
-			request.getSession().setAttribute("snake", snake);
+			service.eating(request);
+
+		} else if (edibleStore.isEmpty()) {
+
+			createNewEdibleAndBarrierComponentStore(snake, request);
+			
 		} else {
-			model.addAttribute("theEnd", "BIG-BANG! Szeretnél új játékot játszani?");
+
+			if (service.canTurnRight(snake) && !service.isSnakeBittenByItself(snake)
+					&& !service.isComponentMeeting(snake, barrierStore)) {
+
+				snake = service.turnRight(snake);
+				request.getSession().setAttribute("snake", snake);
+			} else {
+				model.addAttribute("theEnd", "BIG-BANG! Szeretnél új játékot játszani?");
+			}
+
 		}
 
 		model.addAttribute("boardcols", Config.BOARD_COLS);
@@ -158,11 +176,21 @@ public class SnakeGameController {
 
 		List<Component> board = service.createBoardComponentStore();
 		List<Component> boardWithEdible = service.addComponentStoreToBoardComponentStore(board, edibleStore);
-		List<Component> boardWithdEdibleAndBarrier = service.addComponentStoreToBoardComponentStore(boardWithEdible, barrierStore);
-		List<Component> boardWithEdibleAndBarrierAndSnake = service.addComponentStoreToBoardComponentStore(boardWithdEdibleAndBarrier, snake);
-		
+		List<Component> boardWithdEdibleAndBarrier = service.addComponentStoreToBoardComponentStore(boardWithEdible,
+				barrierStore);
+		List<Component> boardWithEdibleAndBarrierAndSnake = service
+				.addComponentStoreToBoardComponentStore(boardWithdEdibleAndBarrier, snake);
+
 		return boardWithEdibleAndBarrierAndSnake;
 	}
 
-	
+	private void createNewEdibleAndBarrierComponentStore(List<Component> snake, HttpServletRequest request) {
+		
+		List<Component> newEdibleStore = service.createEdibleComponentStore(snake);
+		List<Component> newBarrierStore = service.createBarrierComponentStore(snake, newEdibleStore);
+		request.getSession().setAttribute("edible", newEdibleStore);
+		request.getSession().setAttribute("barrier", newBarrierStore);
+
+		
+	}
 }

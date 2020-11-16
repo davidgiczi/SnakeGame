@@ -21,10 +21,8 @@
 <table>
 
 <tr th:each="x: ${#numbers.sequence(0, boardrows - 1)}">
-<!--td th:each="y: ${#numbers.sequence(0, boardcols - 1)}" th:id="${x * boardcols + y}"
-	th:if="${board[x * boardcols + y].color == '#34A853'}"><img th:src="@{/img/apple.jpg}"></img></td-->
 <td th:each="y: ${#numbers.sequence(0, boardcols - 1)}" th:id="${x * boardcols + y}"
- th:style="|background-color: ${board[x * boardcols + y].color}|"/>
+	th:style="|background-color: ${board[x * boardcols + y].color}|">
 </tr>
 
 </table>
