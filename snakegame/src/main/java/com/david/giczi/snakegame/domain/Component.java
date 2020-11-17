@@ -10,7 +10,7 @@ public class Component {
 	private int viewBoard_x;
 	private int viewBoard_y;
 	private Direction actualDirection;
-	private String color = "white";
+	private String color;
 	
 	
 	public Component(int logicBoardIndex) {

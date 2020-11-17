@@ -2,8 +2,8 @@ package com.david.giczi.snakegame.utils;
 
 public interface ComponentColor {
 
-	String RED = "#EA4335";
-	String YELLOW = "#FBBC05";
-	String GREEN = "#34A853";
-	String BROWN = "#795C34";
+	String RED = "#f95151";
+	String YELLOW = "#f9e35f";
+	String GREEN = "#818c3c";
+	String BROWN = "#72601b";
 }
