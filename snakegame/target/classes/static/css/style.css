@@ -1,36 +1,35 @@
 @charset "UTF-8";
 
-body{
-	
-	background-color: lightblue;
+body {
 	text-align: center;
+	background-image: url("/img/tree.jpg");
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: 100% 100%;
 }
 
-table{
-	
+table {
 	margin-left: auto;
 	margin-right: auto;
-	width: 60%;
+	width: 50%;
 	border-collapse: collapse;
-	border: 2px solid lightgray;
+	border: 1px solid #818c3c;
 }
 
-td, tr{
-	
-	 border: 1px solid lightgray;
-	 height: 40px;
-	 width: 40px;
-	 
+td, tr {
+	border: none;
+	height: 40px;
+	width: 40px;
 }
 
-.content{
+.content {
 	font-size: 30px;
-	color: 	#EA4335;
+	color: #EA4335;
 	font-family: Book Antiqua;
 }
 
-.title{
+.title {
 	font-size: 25px;
-	color: 	white;
+	color: white;
 	font-family: Book Antiqua;
 }
