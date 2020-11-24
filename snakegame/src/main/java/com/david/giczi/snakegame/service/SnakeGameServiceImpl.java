@@ -1,9 +1,11 @@
 package com.david.giczi.snakegame.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import com.david.giczi.snakegame.config.Config;
 import com.david.giczi.snakegame.config.GameParam;
 import com.david.giczi.snakegame.domain.Component;
 import com.david.giczi.snakegame.utils.Direction;
+import com.david.giczi.snakegame.utils.ResponseType;
 import com.david.giczi.snakegame.utils.ComponentColor;
 
 @Service
@@ -89,36 +92,40 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 	}
 
 	@Override
+	public boolean canGoDirect(List<Component> snake) {
+
+		Component snakeHead = snake.get(snake.size() - 1);
+
+		if (snakeHead.getActualDirection() == Direction.NORTH && snakeHead.getViewBoard_x() < 1) {
+			return false;
+
+		} else if (snakeHead.getActualDirection() == Direction.EAST
+				&& snakeHead.getViewBoard_y() >= Config.BOARD_COLS - 1) {
+			return false;
+
+		} else if (snakeHead.getActualDirection() == Direction.SOUTH
+				&& snakeHead.getViewBoard_x() >= Config.BOARD_ROWS - 1) {
+			return false;
+
+		} else if (snakeHead.getActualDirection() == Direction.WEST && snakeHead.getViewBoard_y() < 1) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
 	public List<Component> goDirect(List<Component> snake) {
 
 		List<Component> steppedSnake = new ArrayList<>();
 		snake.stream().filter(c -> snake.indexOf(c) > 0)
 				.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
 		steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
-		steppedSnake.add(stepDirect((snake.get(snake.size() - 1))));
+		Component snakeHead = snake.get(snake.size() - 1);
+		steppedSnake.add(stepDirect(snakeHead));
+		Component deletedSnakeComponent = snake.get(0);
+		steppedSnake.add(deletedSnakeComponent);
 
-		return steppedSnake;
-	}
-
-	@Override
-	public List<Component> turnLeft(List<Component> snake) {
-
-		List<Component> steppedSnake = new ArrayList<>();
-		snake.stream().filter(c -> snake.indexOf(c) > 0)
-				.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
-		steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
-		steppedSnake.add(stepLeft(snake.get(snake.size() - 1)));
-		return steppedSnake;
-	}
-
-	@Override
-	public List<Component> turnRight(List<Component> snake) {
-
-		List<Component> steppedSnake = new ArrayList<>();
-		snake.stream().filter(c -> snake.indexOf(c) > 0)
-				.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
-		steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
-		steppedSnake.add(stepRight(snake.get(snake.size() - 1)));
 		return steppedSnake;
 	}
 
@@ -146,74 +153,53 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 		return snakeComponent;
 	}
 
-	private Component stepLeft(Component snakeComponent) {
+	@Override
+	public boolean canGoNorth(List<Component> snake) {
 
-		Direction actual = snakeComponent.getActualDirection();
+		Component snakeHead = snake.get(snake.size() - 1);
 
-		if (actual == Direction.NORTH) {
-
-			snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x(), snakeComponent.getViewBoard_y() - 1);
-			snakeComponent.setActualDirection(Direction.WEST);
-
-		} else if (actual == Direction.EAST) {
-
-			snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x() - 1, snakeComponent.getViewBoard_y());
-			snakeComponent.setActualDirection(Direction.NORTH);
-		} else if (actual == Direction.SOUTH) {
-
-			snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x(), snakeComponent.getViewBoard_y() - 1);
-			snakeComponent.setActualDirection(Direction.WEST);
-		} else if (actual == Direction.WEST) {
-
-			snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x() + 1, snakeComponent.getViewBoard_y());
-			snakeComponent.setActualDirection(Direction.SOUTH);
+		if (snakeHead.getViewBoard_x() < 1) {
+			return false;
 		}
 
-		return snakeComponent;
+		return true;
 	}
 
-	private Component stepRight(Component snakeComponent) {
+	@Override
+	public List<Component> goNorth(List<Component> snake) {
 
-		Direction actual = snakeComponent.getActualDirection();
+		Direction actual = snake.get(snake.size() - 1).getActualDirection();
 
-		if (actual == Direction.NORTH) {
+		if (actual == Direction.EAST || actual == Direction.WEST) {
 
-			snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x(), snakeComponent.getViewBoard_y() + 1);
-			snakeComponent.setActualDirection(Direction.EAST);
-		} else if (actual == Direction.EAST) {
-
-			snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x() + 1, snakeComponent.getViewBoard_y());
-			snakeComponent.setActualDirection(Direction.SOUTH);
-		} else if (actual == Direction.SOUTH) {
-
-			snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x(), snakeComponent.getViewBoard_y() + 1);
-			snakeComponent.setActualDirection(Direction.EAST);
-		} else if (actual == Direction.WEST) {
-
-			snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x() - 1, snakeComponent.getViewBoard_y());
-			snakeComponent.setActualDirection(Direction.NORTH);
+			List<Component> steppedSnake = new ArrayList<>();
+			snake.stream().filter(c -> snake.indexOf(c) > 0)
+					.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
+			steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
+			Component snakeHead = snake.get(snake.size() - 1);
+			steppedSnake.add(stepNorth(snakeHead));
+			Component deletedSnakeComponent = snake.get(0);
+			steppedSnake.add(deletedSnakeComponent);
+			return steppedSnake;
 		}
+		snake.add(new Component(-1));
+		return snake;
+	}
+
+	private Component stepNorth(Component snakeComponent) {
+
+		snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x() - 1, snakeComponent.getViewBoard_y());
+		snakeComponent.setActualDirection(Direction.NORTH);
 
 		return snakeComponent;
 	}
 
 	@Override
-	public boolean canGoDirect(List<Component> snake) {
+	public boolean canGoEast(List<Component> snake) {
 
 		Component snakeHead = snake.get(snake.size() - 1);
 
-		if (snakeHead.getActualDirection() == Direction.NORTH && snakeHead.getViewBoard_x() < 1) {
-			return false;
-
-		} else if (snakeHead.getActualDirection() == Direction.EAST
-				&& snakeHead.getViewBoard_y() >= Config.BOARD_COLS - 1) {
-			return false;
-
-		} else if (snakeHead.getActualDirection() == Direction.SOUTH
-				&& snakeHead.getViewBoard_x() >= Config.BOARD_ROWS - 1) {
-			return false;
-
-		} else if (snakeHead.getActualDirection() == Direction.WEST && snakeHead.getViewBoard_y() < 1) {
+		if (snakeHead.getViewBoard_y() >= Config.BOARD_COLS - 1) {
 			return false;
 		}
 
@@ -221,22 +207,40 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 	}
 
 	@Override
-	public boolean canTurnLeft(List<Component> snake) {
+	public List<Component> goEast(List<Component> snake) {
+
+		Direction actual = snake.get(snake.size() - 1).getActualDirection();
+
+		if (actual == Direction.SOUTH || actual == Direction.NORTH) {
+
+			List<Component> steppedSnake = new ArrayList<>();
+			snake.stream().filter(c -> snake.indexOf(c) > 0)
+					.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
+			steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
+			Component snakeHead = snake.get(snake.size() - 1);
+			steppedSnake.add(stepEast(snakeHead));
+			Component deletedSnakeComponent = snake.get(0);
+			steppedSnake.add(deletedSnakeComponent);
+			return steppedSnake;
+		}
+		snake.add(new Component(-1));
+		return snake;
+	}
+
+	private Component stepEast(Component snakeComponent) {
+
+		snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x(), snakeComponent.getViewBoard_y() + 1);
+		snakeComponent.setActualDirection(Direction.EAST);
+
+		return snakeComponent;
+	}
+
+	@Override
+	public boolean canGoSouth(List<Component> snake) {
 
 		Component snakeHead = snake.get(snake.size() - 1);
 
-		if (snakeHead.getActualDirection() == Direction.NORTH && snakeHead.getViewBoard_y() < 1) {
-			return false;
-
-		} else if (snakeHead.getActualDirection() == Direction.EAST && snakeHead.getViewBoard_x() < 1) {
-			return false;
-
-		} else if (snakeHead.getActualDirection() == Direction.SOUTH
-				&& snakeHead.getViewBoard_y() < 1) {
-			return false;
-
-		} else if (snakeHead.getActualDirection() == Direction.WEST
-				&& snakeHead.getViewBoard_x() >= Config.BOARD_ROWS - 1) {
+		if (snakeHead.getViewBoard_x() >= Config.BOARD_ROWS - 1) {
 			return false;
 		}
 
@@ -244,25 +248,74 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 	}
 
 	@Override
-	public boolean canTurnRight(List<Component> snake) {
+	public List<Component> goSouth(List<Component> snake) {
+
+		Direction actual = snake.get(snake.size() - 1).getActualDirection();
+
+		if (actual == Direction.EAST || actual == Direction.WEST) {
+
+			List<Component> steppedSnake = new ArrayList<>();
+			snake.stream().filter(c -> snake.indexOf(c) > 0)
+					.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
+			steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
+			Component snakeHead = snake.get(snake.size() - 1);
+			steppedSnake.add(stepSouth(snakeHead));
+			Component deletedSnakeComponent = snake.get(0);
+			steppedSnake.add(deletedSnakeComponent);
+			return steppedSnake;
+		}
+		snake.add(new Component(-1));
+		return snake;
+	}
+
+	private Component stepSouth(Component snakeComponent) {
+
+		snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x() + 1, snakeComponent.getViewBoard_y());
+		snakeComponent.setActualDirection(Direction.SOUTH);
+
+		return snakeComponent;
+	}
+
+	@Override
+	public boolean canGoWest(List<Component> snake) {
 
 		Component snakeHead = snake.get(snake.size() - 1);
 
-		if (snakeHead.getActualDirection() == Direction.NORTH && snakeHead.getViewBoard_y() >= Config.BOARD_COLS - 1) {
-			return false;
-
-		} else if (snakeHead.getActualDirection() == Direction.EAST
-				&& snakeHead.getViewBoard_x() >= Config.BOARD_ROWS - 1) {
-			return false;
-
-		} else if (snakeHead.getActualDirection() == Direction.SOUTH && snakeHead.getViewBoard_y() >= Config.BOARD_COLS - 1) {
-			return false;
-
-		} else if (snakeHead.getActualDirection() == Direction.WEST && snakeHead.getViewBoard_x() < 1) {
+		if (snakeHead.getViewBoard_y() < 1) {
 			return false;
 		}
 
 		return true;
+	}
+
+	@Override
+	public List<Component> goWest(List<Component> snake) {
+
+		Direction actual = snake.get(snake.size() - 1).getActualDirection();
+
+		if (actual == Direction.SOUTH || actual == Direction.NORTH) {
+
+			List<Component> steppedSnake = new ArrayList<>();
+			snake.stream().filter(c -> snake.indexOf(c) > 0)
+					.forEach(c -> steppedSnake.add(new Component(c.getLogicBoardIndex())));
+			steppedSnake.forEach(c -> c.setColor(ComponentColor.YELLOW));
+			Component snakeHead = snake.get(snake.size() - 1);
+			steppedSnake.add(stepWest(snakeHead));
+			Component deletedSnakeComponent = snake.get(0);
+			steppedSnake.add(deletedSnakeComponent);
+			return steppedSnake;
+
+		}
+		snake.add(new Component(-1));
+		return snake;
+	}
+
+	private Component stepWest(Component snakeComponent) {
+
+		snakeComponent.setViewBoardCoords(snakeComponent.getViewBoard_x(), snakeComponent.getViewBoard_y() - 1);
+		snakeComponent.setActualDirection(Direction.WEST);
+
+		return snakeComponent;
 	}
 
 	@Override
@@ -292,8 +345,9 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 
 			Component component = new Component(x, y);
 
-			if (x != snakeHead.getViewBoard_x() && y != snakeHead.getViewBoard_y() && !snake.contains(component) && !store.contains(component)
-					&& !barrierStore.contains(component) && !isEdibleComponentSurroundedByMoreThanOneBarriers(barrierStore, component)) {
+			if (x != snakeHead.getViewBoard_x() && y != snakeHead.getViewBoard_y() && !snake.contains(component)
+					&& !store.contains(component) && !barrierStore.contains(component)
+					&& !isEdibleComponentSurroundedByMoreThanOneBarriers(barrierStore, component)) {
 
 				component.setColor(ComponentColor.GREEN);
 
@@ -310,16 +364,16 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 
 		int numberOfBarriersNextToEdible = 0;
 
-		if(barrierStore.contains(new Component(component.getViewBoard_x() + 1, component.getViewBoard_y()))) {
+		if (barrierStore.contains(new Component(component.getViewBoard_x() + 1, component.getViewBoard_y()))) {
 			numberOfBarriersNextToEdible++;
 		}
-		if(barrierStore.contains(new Component(component.getViewBoard_x() - 1, component.getViewBoard_y()))) {
+		if (barrierStore.contains(new Component(component.getViewBoard_x() - 1, component.getViewBoard_y()))) {
 			numberOfBarriersNextToEdible++;
 		}
-		if(barrierStore.contains(new Component(component.getViewBoard_x(), component.getViewBoard_y() + 1))) {
+		if (barrierStore.contains(new Component(component.getViewBoard_x(), component.getViewBoard_y() + 1))) {
 			numberOfBarriersNextToEdible++;
 		}
-		if(barrierStore.contains(new Component(component.getViewBoard_x(), component.getViewBoard_y() - 1))) {
+		if (barrierStore.contains(new Component(component.getViewBoard_x(), component.getViewBoard_y() - 1))) {
 			numberOfBarriersNextToEdible++;
 		}
 
@@ -343,8 +397,8 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 
 			Component component = new Component(x, y);
 
-			if (x != snakeHead.getViewBoard_x() && y != snakeHead.getViewBoard_y()
-					&& !snake.contains(component) && !store.contains(component)) {
+			if (x != snakeHead.getViewBoard_x() && y != snakeHead.getViewBoard_y() && !snake.contains(component)
+					&& !store.contains(component)) {
 
 				component.setColor(ComponentColor.BROWN);
 
@@ -458,7 +512,61 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 	}
 
 	@Override
-	public void eating(HttpServletRequest request) {
+	public List<Component> eating(List<Component> snake, List<Component> edibleStore) {
+
+		List<Component> eatenSnake = new ArrayList<>();
+		Component commonComponent = snake.get(snake.size() - 1);
+		edibleStore.remove(commonComponent);
+		eatenSnake.add(new Component(-1));
+		eatenSnake.addAll(snake);
+
+		return eatenSnake;
+	}
+
+	@Override
+	public void createAndSendResponseString(HttpServletRequest request, HttpServletResponse response,
+			ResponseType type) {
+
+		switch (type) {
+
+		case FOR_STEPPING:
+			createAndSendResponseStringForStepping(request, response);
+			break;
+		case FOR_NEW_TABLE:
+			createAndSendResponseStringForNewTable(request, response);
+			break;
+		case FOR_THE_END_OF_THE_GAME:
+			createAndSendResponseStringForTheEndOfTheGame(request, response);
+			break;
+
+		default:
+
+		}
+
+	}
+
+	private void createAndSendResponseStringForStepping(HttpServletRequest request, HttpServletResponse response) {
+
+		@SuppressWarnings("unchecked")
+		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
+		StringBuilder resp = new StringBuilder();
+		snake.stream().filter(c -> snake.indexOf(c) < snake.size() - 1)
+				.forEach(c -> resp.append(c.getLogicBoardIndex()).append("_"));
+		resp.deleteCharAt(resp.toString().lastIndexOf("_"));
+		Component deletedSnakeComponent = snake.get(snake.size() - 1);
+		resp.append(";").append(deletedSnakeComponent.getLogicBoardIndex()).append(";").append(";").append(";");
+		snake.remove(deletedSnakeComponent);
+		resp.append(calcScore(snake)).append(";").append(calcLevel(snake)).append(";").append(getTempo(snake));
+		request.getSession().setAttribute("snake", snake);
+		try {
+			response.getWriter().append(resp.toString());
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+	}
+
+	private void createAndSendResponseStringForNewTable(HttpServletRequest request, HttpServletResponse response) {
 
 		@SuppressWarnings("unchecked")
 		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
@@ -467,30 +575,41 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 		@SuppressWarnings("unchecked")
 		List<Component> barrierStore = (List<Component>) request.getSession().getAttribute("barrier");
 
-		Component snakeHead = snake.get(snake.size() - 1);
-		edibleStore.remove(snakeHead);
-		Component snakeTail = snake.get(0);
-		int x = snakeTail.getViewBoard_x();
-		int y = snakeTail.getViewBoard_y();
-		List<Component> store = new ArrayList<>();
-		store.add(new Component(x + 1, y));
-		store.add(new Component(x - 1, y));
-		store.add(new Component(x, y + 1));
-		store.add(new Component(x, y - 1));
-		store.forEach(t -> t.setColor(ComponentColor.YELLOW));
-		Component plusSnakeTail = store.stream()
-				.filter(t -> t.getViewBoard_x() >= 0 && t.getViewBoard_y() >= 0
-						&& t.getViewBoard_x() < Config.BOARD_ROWS && t.getViewBoard_y() < Config.BOARD_COLS
-						&& !snake.contains(t) && !edibleStore.contains(t) && !barrierStore.contains(t))
-				.findFirst().get();
-		store = new ArrayList<>(snake);
-		snake.clear();
-		snake.add(plusSnakeTail);
-		snake.addAll(store);
+		StringBuilder resp = new StringBuilder();
+		snake.forEach(c -> resp.append(c.getLogicBoardIndex()).append("_"));
+		resp.deleteCharAt(resp.toString().lastIndexOf("_"));
+		resp.append(";").append("-1").append(";");
+		edibleStore.forEach(c -> resp.append(c.getLogicBoardIndex()).append("_"));
+		resp.deleteCharAt(resp.toString().lastIndexOf("_"));
+		resp.append(";");
+		barrierStore.forEach(c -> resp.append(c.getLogicBoardIndex()).append("_"));
+		resp.deleteCharAt(resp.toString().lastIndexOf("_"));
+		resp.append(";").append(calcScore(snake)).append(";").append(calcLevel(snake)).append(";")
+				.append(getTempo(snake));
 
-		request.getSession().setAttribute("snake", snake);
-		request.getSession().setAttribute("edible", edibleStore);
+		try {
+			response.getWriter().append(resp.toString());
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
 
 	}
 
+	private void createAndSendResponseStringForTheEndOfTheGame(HttpServletRequest request,
+			HttpServletResponse response) {
+
+		@SuppressWarnings("unchecked")
+		List<Component> snake = (List<Component>) request.getSession().getAttribute("snake");
+
+		try {
+			request.setCharacterEncoding("UTF-8");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().append("Vége a játéknak!\nPontszám: " + calcScore(snake) + "\nSzint: "
+					+ calcLevel(snake) + "\nSzeretnél új játékot játszni?");
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+	}
 }

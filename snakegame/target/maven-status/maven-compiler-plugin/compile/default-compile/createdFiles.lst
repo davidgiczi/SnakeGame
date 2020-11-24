@@ -4,7 +4,9 @@ com\david\giczi\snakegame\domain\Component.class
 com\david\giczi\snakegame\SnakeGameApplication.class
 META-INF\spring-configuration-metadata.json
 com\david\giczi\snakegame\utils\Direction.class
+com\david\giczi\snakegame\utils\ResponseType.class
 com\david\giczi\snakegame\config\Config.class
 com\david\giczi\snakegame\config\GameParam.class
+com\david\giczi\snakegame\service\SnakeGameServiceImpl$1.class
 com\david\giczi\snakegame\utils\ComponentColor.class
 com\david\giczi\snakegame\controller\SnakeGameController.class

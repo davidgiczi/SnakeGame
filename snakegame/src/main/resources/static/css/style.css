@@ -9,18 +9,22 @@ body {
 }
 
 table {
+	
 	margin-left: auto;
 	margin-right: auto;
-	width: 50%;
-	border-collapse: collapse;
+	width: 40%;
 	border: 1px solid #818c3c;
+	border-radius: 30px;
 }
 
 td, tr {
+	background-clip: padding-box;
+    border-radius: 15px;
 	border: none;
 	height: 40px;
 	width: 40px;
 }
+
 
 .content {
 	font-size: 30px;
