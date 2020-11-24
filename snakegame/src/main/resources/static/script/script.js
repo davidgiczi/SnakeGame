@@ -42,7 +42,7 @@ else if (e.keyCode === 40) {
 	}
  else if (e.keyCode === 13) {
 	
-   		alert("Bebábozódtzál!?");
+   		alert("Bebábozódtál!?");
     } 
 }
 
@@ -141,7 +141,4 @@ function displayResponse(){
 		}
 		
 	}
-	
-	
-
 	
