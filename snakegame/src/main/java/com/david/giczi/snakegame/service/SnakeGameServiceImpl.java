@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.david.giczi.snakegame.config.Config;
@@ -94,8 +93,9 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 	@Override
 	public boolean canGoDirect(List<Component> snake) {
 
-		Component snakeHead = snake.get(snake.size() - 1);
-
+		Component snakeHead = stepDirect(new Component(snake.get(snake.size() - 1).getLogicBoardIndex()));
+		snakeHead.setActualDirection(snake.get(snake.size() - 1).getActualDirection());
+	
 		if (snakeHead.getActualDirection() == Direction.NORTH && snakeHead.getViewBoard_x() < 1) {
 			return false;
 
@@ -107,7 +107,8 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 				&& snakeHead.getViewBoard_x() >= Config.BOARD_ROWS - 1) {
 			return false;
 
-		} else if (snakeHead.getActualDirection() == Direction.WEST && snakeHead.getViewBoard_y() < 1) {
+		} else if (snakeHead.getActualDirection() == Direction.WEST 
+				&& snakeHead.getViewBoard_y() < 1) {
 			return false;
 		}
 
@@ -500,26 +501,62 @@ public class SnakeGameServiceImpl implements SnakeGameService, ComponentColor {
 	}
 
 	@Override
-	public boolean isComponentMeeting(List<Component> snake, List<Component> componentStore) {
-
-		Component snakeHead = snake.get(snake.size() - 1);
-
-		if (componentStore.contains(snakeHead)) {
+	public boolean isComponentMeeting(List<Component> snake, List<Component> componentStore, Direction direction) {
+		
+		Component snakeHead = new Component(snake.get(snake.size() - 1).getLogicBoardIndex());
+		snakeHead.setActualDirection(snake.get(snake.size() - 1).getActualDirection());
+		
+		if (direction == Direction.DIRECT && componentStore.contains(stepDirect(snakeHead))) {
 			return true;
 		}
+		else if (direction == Direction.NORTH && componentStore.contains(stepNorth(snakeHead))) {
+			return true;
+		}
+		else if (direction == Direction.EAST && componentStore.contains(stepEast(snakeHead))) {
+			return true;
+		}
+		else if (direction == Direction.SOUTH && componentStore.contains(stepSouth(snakeHead))) {
+			return true;
+		}
+		else if (direction == Direction.WEST && componentStore.contains(stepWest(snakeHead))) {
+			return true;
+		}
+		
 
 		return false;
 	}
+	
 
 	@Override
-	public List<Component> eating(List<Component> snake, List<Component> edibleStore) {
+	public List<Component> eating(List<Component> snake, List<Component> edibleStore, Direction direction) {
 
 		List<Component> eatenSnake = new ArrayList<>();
-		Component commonComponent = snake.get(snake.size() - 1);
+		Component commonComponent = null;
+		
+		switch (direction) {
+		case DIRECT:
+			commonComponent = new Component(snake.get(snake.size() -1).getLogicBoardIndex());
+			commonComponent.setActualDirection(snake.get(snake.size() - 1).getActualDirection());
+			commonComponent = stepDirect(commonComponent);
+			break;
+		case NORTH:
+			commonComponent = stepNorth(new Component(snake.get(snake.size() -1).getLogicBoardIndex()));
+			break;
+		case EAST:
+			commonComponent = stepEast(new Component(snake.get(snake.size() -1).getLogicBoardIndex()));
+			break;
+		case SOUTH:
+			commonComponent = stepSouth(new Component(snake.get(snake.size() -1).getLogicBoardIndex()));
+			break;
+		case WEST:
+			commonComponent = stepWest(new Component(snake.get(snake.size() -1).getLogicBoardIndex()));
+			break;
+		}
+
 		edibleStore.remove(commonComponent);
 		eatenSnake.add(new Component(-1));
 		eatenSnake.addAll(snake);
-
+		
 		return eatenSnake;
 	}
 

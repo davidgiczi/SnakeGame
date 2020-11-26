@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.david.giczi.snakegame.config.Config;
 import com.david.giczi.snakegame.domain.Component;
 import com.david.giczi.snakegame.service.SnakeGameService;
+import com.david.giczi.snakegame.utils.Direction;
 import com.david.giczi.snakegame.utils.ResponseType;
 
 @Controller
@@ -58,7 +59,6 @@ public class SnakeGameController {
 		case "goWest":
 			goWest(request, response);
 			break;
-
 		case "goNorth":
 			goNorth(request, response);
 			break;
@@ -83,32 +83,29 @@ public class SnakeGameController {
 		@SuppressWarnings("unchecked")
 		List<Component> barrierStore = (List<Component>) request.getSession().getAttribute("barrier");
 
-		if (edibleStore.isEmpty()) {
+		 if (edibleStore.isEmpty()) {
 
 			createNewEdibleAndBarrierComponentStore(snake, request);
 			service.createAndSendResponseString(request, response, ResponseType.FOR_NEW_TABLE);
 
+		} else if (service.canGoDirect(snake) && !service.isSnakeBittenByItself(snake) 
+				&& !service.isComponentMeeting(snake, barrierStore, Direction.DIRECT)) {
+			
+			if (service.isComponentMeeting(snake, edibleStore, Direction.DIRECT)) {
+
+				snake = service.eating(snake, edibleStore, Direction.DIRECT);
+			}
+			
+			
+			snake = service.goDirect(snake);
+			request.getSession().setAttribute("snake", snake);
+			request.getSession().setAttribute("edible", edibleStore);
+			service.createAndSendResponseString(request, response, ResponseType.FOR_STEPPING);
+			
+
 		} else {
 
-			if (service.canGoDirect(snake) && !service.isSnakeBittenByItself(snake)
-					&& !service.isComponentMeeting(snake, barrierStore)) {
-
-				if (service.isComponentMeeting(snake, edibleStore)) {
-
-					snake = service.eating(snake, edibleStore);
-				}
-
-				snake = service.goDirect(snake);
-
-				request.getSession().setAttribute("snake", snake);
-				request.getSession().setAttribute("edible", edibleStore);
-				service.createAndSendResponseString(request, response, ResponseType.FOR_STEPPING);
-
-			} else {
-
-				service.createAndSendResponseString(request, response, ResponseType.FOR_THE_END_OF_THE_GAME);
-
-			}
+			service.createAndSendResponseString(request, response, ResponseType.FOR_THE_END_OF_THE_GAME);
 
 		}
 
@@ -123,32 +120,31 @@ public class SnakeGameController {
 		@SuppressWarnings("unchecked")
 		List<Component> barrierStore = (List<Component>) request.getSession().getAttribute("barrier");
 
+		
 		if (edibleStore.isEmpty()) {
 
 			createNewEdibleAndBarrierComponentStore(snake, request);
 			service.createAndSendResponseString(request, response, ResponseType.FOR_NEW_TABLE);
-
-		} else {
-
-			if (service.canGoNorth(snake) && !service.isSnakeBittenByItself(snake)
-					&& !service.isComponentMeeting(snake, barrierStore)) {
-
-				if (service.isComponentMeeting(snake, edibleStore)) {
-					service.eating(snake, edibleStore);
-				}
-
+		}
+		else if (service.canGoNorth(snake) && !service.isSnakeBittenByItself(snake)
+					&& !service.isComponentMeeting(snake, barrierStore, Direction.NORTH)) {
+			
+			if (service.isComponentMeeting(snake, edibleStore, Direction.NORTH)) {
+				
+				snake = service.eating(snake, edibleStore, Direction.NORTH);
+			}	
+			
 				snake = service.goNorth(snake);
-
 				request.getSession().setAttribute("snake", snake);
 				request.getSession().setAttribute("edible", edibleStore);
 				service.createAndSendResponseString(request, response, ResponseType.FOR_STEPPING);
-
-			} else {
+				
+		}
+		else {
 				service.createAndSendResponseString(request, response, ResponseType.FOR_THE_END_OF_THE_GAME);
 
-			}
 		}
-
+		
 	}
 
 	private void goEast(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -160,32 +156,29 @@ public class SnakeGameController {
 		@SuppressWarnings("unchecked")
 		List<Component> barrierStore = (List<Component>) request.getSession().getAttribute("barrier");
 
+		
 		if (edibleStore.isEmpty()) {
 
 			createNewEdibleAndBarrierComponentStore(snake, request);
 			service.createAndSendResponseString(request, response, ResponseType.FOR_NEW_TABLE);
-
-		} else {
-
-			if (service.canGoEast(snake) && !service.isSnakeBittenByItself(snake)
-					&& !service.isComponentMeeting(snake, barrierStore)) {
-
-				if (service.isComponentMeeting(snake, edibleStore)) {
-					service.eating(snake, edibleStore);
-				}
-
+		}
+		else if (service.canGoEast(snake) && !service.isSnakeBittenByItself(snake)
+					&& !service.isComponentMeeting(snake, barrierStore, Direction.EAST)) {
+			
+			if (service.isComponentMeeting(snake, edibleStore, Direction.EAST)) {
+				
+				snake = service.eating(snake, edibleStore, Direction.EAST);
+			}
+							
 				snake = service.goEast(snake);
-
 				request.getSession().setAttribute("snake", snake);
 				request.getSession().setAttribute("edible", edibleStore);
 				service.createAndSendResponseString(request, response, ResponseType.FOR_STEPPING);
-
-			} else {
+		}
+		else {
 				service.createAndSendResponseString(request, response, ResponseType.FOR_THE_END_OF_THE_GAME);
 
 			}
-
-		}
 
 	}
 
@@ -198,32 +191,29 @@ public class SnakeGameController {
 		@SuppressWarnings("unchecked")
 		List<Component> barrierStore = (List<Component>) request.getSession().getAttribute("barrier");
 
-		if (edibleStore.isEmpty()) {
+		
+		 if (edibleStore.isEmpty()) {
 
 			createNewEdibleAndBarrierComponentStore(snake, request);
 			service.createAndSendResponseString(request, response, ResponseType.FOR_NEW_TABLE);
 
-		} else {
-
-			if (service.canGoSouth(snake) && !service.isSnakeBittenByItself(snake)
-					&& !service.isComponentMeeting(snake, barrierStore)) {
-
-				if (service.isComponentMeeting(snake, edibleStore)) {
-
-					service.eating(snake, edibleStore);
-				}
-
+		}
+		else if (service.canGoSouth(snake) && !service.isSnakeBittenByItself(snake)
+					&& !service.isComponentMeeting(snake, barrierStore, Direction.SOUTH)) {
+			
+			if (service.isComponentMeeting(snake, edibleStore, Direction.SOUTH)) {
+				
+				snake = service.eating(snake, edibleStore, Direction.SOUTH);
+			}
+							
 				snake = service.goSouth(snake);
-
 				request.getSession().setAttribute("snake", snake);
 				request.getSession().setAttribute("edible", edibleStore);
 				service.createAndSendResponseString(request, response, ResponseType.FOR_STEPPING);
-
-			} else {
+			}
+		else {
 				service.createAndSendResponseString(request, response, ResponseType.FOR_THE_END_OF_THE_GAME);
 			}
-
-		}
 
 	}
 
@@ -241,28 +231,24 @@ public class SnakeGameController {
 			createNewEdibleAndBarrierComponentStore(snake, request);
 			service.createAndSendResponseString(request, response, ResponseType.FOR_NEW_TABLE);
 
-		} else {
-
-			if (service.canGoWest(snake) && !service.isSnakeBittenByItself(snake)
-					&& !service.isComponentMeeting(snake, barrierStore)) {
-
-				if (service.isComponentMeeting(snake, edibleStore)) {
-
-					service.eating(snake, edibleStore);
-
-				}
-
+		}
+		else if (service.canGoWest(snake) && !service.isSnakeBittenByItself(snake)
+					&& !service.isComponentMeeting(snake, barrierStore, Direction.WEST)) {
+				
+			if (service.isComponentMeeting(snake, edibleStore, Direction.WEST)) {
+				
+				snake = service.eating(snake, edibleStore, Direction.WEST);
+				
+			}
+				
 				snake = service.goWest(snake);
-
 				request.getSession().setAttribute("snake", snake);
 				request.getSession().setAttribute("edible", edibleStore);
 				service.createAndSendResponseString(request, response, ResponseType.FOR_STEPPING);
-
-			} else {
+			}
+		else {
 				service.createAndSendResponseString(request, response, ResponseType.FOR_THE_END_OF_THE_GAME);
 			}
-
-		}
 
 	}
 
