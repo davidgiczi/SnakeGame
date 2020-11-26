@@ -14,7 +14,7 @@ var GREEN = "#0b6623";
 var BROWN = "#72601b";
 var ROWS = parseInt(document.getElementById("rows").value);
 var COLS  = parseInt(document.getElementById("cols").value);
-var run = setInterval(function send(){sendAjaxRequest("goDirect")}, tempo);
+var run = setInterval(function send(){sendAjaxRequest("goDirect")}, 1000);
 
 document.addEventListener("keydown", pressButton);
 
@@ -42,7 +42,7 @@ else if (e.keyCode === 40) {
 	}
  else if (e.keyCode === 13) {
 	
-   		alert("Bebábozódtzál!?");
+   		alert("Bebábozódtál!?");
     } 
 }
 
@@ -100,7 +100,11 @@ function parseResponse(resp){
 	barrierStore = inputData[3].split("_");
 	score = inputData[4];
 	level = inputData[5];
-	tempo = parseInt(inputData[6]);
+	if(parseInt(inputData[6]) !== tempo){
+		tempo = parseInt(inputData[6]);
+		clearInterval(run);
+		run = setInterval(function send(){sendAjaxRequest("goDirect")}, tempo);
+	}
 	
 	displayResponse();
 	
@@ -141,7 +145,4 @@ function displayResponse(){
 		}
 		
 	}
-	
-	
-
 	
